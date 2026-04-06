@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Liman Family Tree</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="/css/styles.css"/>
+</head>
+<body>
+
+<!-- ════ NAVBAR ════ -->
+<nav id="nav">
+  <div class="nav-inner">
+    <div class="logo" onclick="go('home')">
+      <div class="logo-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--g)" stroke-width="2.2" stroke-linecap="round">
+          <path d="M12 2C9 5.5 6 9 6 13a6 6 0 0012 0c0-4-3-7.5-6-11z"/>
+          <line x1="12" y1="13" x2="12" y2="22"/>
+          <line x1="9" y1="18" x2="15" y2="18"/>
+        </svg>
+      </div>
+      <span class="logo-text">Liman Family</span>
+    </div>
+    <div class="nav-links">
+      <span class="nl" id="nav-home"         onclick="go('home')">Home</span>
+      <span class="nl" id="nav-search"       onclick="go('search')">Search</span>
+      <span class="nl" id="nav-relationship" onclick="go('relationship')">Relationships</span>
+      <span class="nl" id="nav-history"      onclick="go('history')">History</span>
+      <button class="btn-admin"              onclick="go('admin-login')">Admin Portal</button>
+    </div>
+    <button id="ham" onclick="toggleMob()" aria-label="Menu">
+      <svg width="22" height="22" fill="none" stroke="var(--g)" stroke-width="2.5" stroke-linecap="round"><path d="M3 6h16M3 12h16M3 18h16"/></svg>
+    </button>
+  </div>
+  <div id="mob-menu">
+    <span class="nl" onclick="go('home');toggleMob()">Home</span>
+    <span class="nl" onclick="go('search');toggleMob()">Search</span>
+    <span class="nl" onclick="go('relationship');toggleMob()">Relationships</span>
+    <span class="nl" onclick="go('history');toggleMob()">History</span>
+    <span class="nl" onclick="go('admin-login');toggleMob()">Admin Portal</span>
+  </div>
+</nav>
+
+<!-- ════ HOME ════ -->
+<div id="page-home" class="page active">
+  <div id="hero">
+    <div style="max-width:520px;margin:0 auto;">
+      <span class="badge" style="margin-bottom:14px;">Family Heritage Archive</span>
+      <div class="anc-wrap">
+        <img id="anc-img" src="/img/default-profile.png" class="anc-photo" alt="Family Head"
+             onclick="enterTree(headId())"/>
+        <span class="anc-gen">Head</span>
+      </div>
+      <h1 id="anc-name" style="font-family:var(--fd);font-size:2rem;font-weight:900;color:var(--txt);margin-bottom:6px;">Liman Family</h1>
+      <p id="anc-title" style="color:var(--mut);font-size:.9rem;margin-bottom:24px;">Family Heritage Archive</p>
+      <button class="btn" onclick="enterTree(headId())">Explore the Family Tree →</button>
+    </div>
+  </div>
+  <div class="stat-strip">
+    <div class="stat-inner">
+      <div><div class="sn" id="stat-children">—</div><div class="stat-lbl">Children of Head</div></div>
+      <div><div class="sn" id="stat-gens">—</div><div class="stat-lbl">Generations</div></div>
+      <div><div class="sn" id="stat-total">—</div><div class="stat-lbl">Total Members</div></div>
+    </div>
+  </div>
+  <div style="max-width:660px;margin:0 auto;padding:48px 20px;text-align:center;">
+    <h2 style="font-family:var(--fd);font-size:1.5rem;color:var(--g);margin-bottom:14px;">A Legacy of Faith &amp; Community</h2>
+    <p style="color:var(--mut);line-height:1.8;font-size:.9rem;">The Liman family stands as a testament to faith, unity and community service across generations. This living digital archive preserves the stories, connections and memories of every branch of this remarkable family.</p>
+  </div>
+</div>
+
+<!-- ════ TREE ════ -->
+<div id="page-tree" class="page">
+  <div id="tree-topbar">
+    <button class="btn-o btn-sm" onclick="goBack()">← Back</button>
+    <button class="btn-o btn-sm" onclick="goHome()">⌂ Home</button>
+    <div style="display:flex;align-items:center;gap:3px;flex-wrap:wrap;" id="bc"></div>
+  </div>
+  <div class="tree-wrap">
+    <div class="parent-banner">
+      <img id="b-img" src="/img/default-profile.png" class="b-img" alt=""/>
+      <div class="b-info">
+        <p style="font-size:.68rem;color:var(--mut);font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px;">Children of</p>
+        <h2 id="b-name" style="font-family:var(--fd);font-size:1.15rem;color:var(--g);"></h2>
+        <p id="b-sub"   style="font-size:.8rem;color:var(--mut);margin-top:3px;"></p>
+      </div>
+      <div style="display:flex;gap:8px;flex-shrink:0;flex-wrap:wrap;">
+        <button class="btn-o btn-sm" onclick="goBack()">← Back</button>
+        <button class="btn-o btn-sm" onclick="goHome()">⌂ Home</button>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;">
+      <div class="trunk" id="trunk"></div>
+      <div id="cgrid" style="width:100%;"></div>
+    </div>
+    <div id="nokids" style="display:none;" class="no-kids">
+      <div style="font-size:2rem;margin-bottom:10px;">🌿</div>
+      <p style="font-weight:700;margin-bottom:6px;">No children recorded</p>
+      <p style="font-size:.85rem;color:var(--mut);margin-bottom:16px;">This member has no children in the archive yet.</p>
+      <button class="btn-o" onclick="goBack()">← Go Back</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════ SEARCH ════ -->
+<div id="page-search" class="page">
+  <div class="s-inner">
+    <div class="page-back-bar"><button class="btn-back" onclick="go('home')">← Back</button></div>
+    <div class="page-header">
+      <span class="badge">Search</span>
+      <h2>Find a Family Member</h2>
+      <p>Search by first name, middle name, nickname or surname</p>
+    </div>
+    <div class="s-wrap">
+      <svg class="s-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+      <input id="s-inp" type="text" class="s-input" placeholder="e.g. Ibrahim, Halima, Makama…" oninput="doSearch(this.value)"/>
+    </div>
+    <div id="s-res"></div>
+    <div id="s-empty" style="text-align:center;padding:48px 0;">
+      <div style="font-size:2.5rem;margin-bottom:10px;">🔍</div>
+      <p style="color:var(--mut);font-size:.9rem;">Start typing to search family members</p>
+    </div>
+  </div>
+</div>
+
+<!-- ════ RELATIONSHIP ════ -->
+<div id="page-relationship" class="page">
+  <div class="rel-inner">
+    <div class="page-back-bar"><button class="btn-back" onclick="go('home')">← Back</button></div>
+    <div class="page-header">
+      <span class="badge">Relationship Finder</span>
+      <h2>How Are They Related?</h2>
+      <p>Select any two members to discover their connection</p>
+    </div>
+    <div class="rel-card">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px;">
+        <div><label class="fl">Person A</label><select id="rel-a" class="r-sel"><option value="">Select…</option></select></div>
+        <div><label class="fl">Person B</label><select id="rel-b" class="r-sel"><option value="">Select…</option></select></div>
+      </div>
+      <button class="btn" style="width:100%;" onclick="findRel()">Find Relationship →</button>
+    </div>
+    <div id="rel-res" class="rel-result"></div>
+  </div>
+</div>
+
+<!-- ════ HISTORY ════ -->
+<div id="page-history" class="page">
+  <div class="hist-inner">
+    <div class="page-back-bar"><button class="btn-back" onclick="go('home')">← Back</button></div>
+    <div class="page-header">
+      <span class="badge">Family History</span>
+      <h2>The Liman Legacy</h2>
+      <p style="max-width:380px;margin:8px auto 0;line-height:1.7;">A story of faith, leadership and community spanning generations.</p>
+    </div>
+    <div class="tl" id="tl"></div>
+  </div>
+</div>
+
+<!-- ════ ADMIN LOGIN ════ -->
+<div id="page-admin-login" class="page">
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <div style="text-align:center;margin-bottom:24px;">
+        <div class="auth-icon">
+          <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="var(--g)" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+        </div>
+        <h2 style="font-family:var(--fd);font-size:1.3rem;color:var(--g);margin-bottom:4px;">Admin Portal</h2>
+        <p style="color:var(--mut);font-size:.8rem;">Sign in to manage the family tree</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div><label class="fl">Username</label><input id="l-u" type="text" class="fi" placeholder="your username" autocomplete="username"/></div>
+        <div><label class="fl">Password</label><input id="l-p" type="password" class="fi" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+        <div id="l-err" class="err-box"></div>
+        <button id="l-btn" class="btn" style="width:100%;" onclick="doLogin()">Sign In →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ ADMIN DASHBOARD ════ -->
+<div id="page-admin-dashboard" class="page">
+  <div id="sb-ov" onclick="toggleSB(false)"></div>
+
+  <!-- ── DARK SIDEBAR ── -->
+  <div id="sb">
+    <div class="sb-brand">
+      <div class="sb-brand-logo">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5db882" stroke-width="2.2" stroke-linecap="round">
+          <path d="M12 2C9 5.5 6 9 6 13a6 6 0 0012 0c0-4-3-7.5-6-11z"/>
+          <line x1="12" y1="13" x2="12" y2="22"/>
+          <line x1="9" y1="18" x2="15" y2="18"/>
+        </svg>
+      </div>
+      <p style="font-size:.6rem;color:rgba(255,255,255,.4);font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:2px;">Signed in as</p>
+      <p id="sb-u" style="font-weight:700;font-size:.9rem;color:#fff;"></p>
+      <p id="sb-r" style="font-size:.72rem;color:rgba(255,255,255,.4);margin-top:1px;"></p>
+      <span class="sb-role-pill" id="sb-pill">Admin</span>
+    </div>
+
+    <nav style="padding:10px 10px 20px;display:flex;flex-direction:column;gap:2px;">
+      <div class="sb-link on" onclick="showSec('dashboard',this)">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Dashboard
+      </div>
+      <div class="sb-link" onclick="showSec('members',this)">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        Family Members
+      </div>
+      <div class="sb-link" id="sb-adm" onclick="showSec('admins',this)">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+        Manage Admins
+      </div>
+      <div style="margin-top:auto;padding-top:16px;border-top:1px solid rgba(255,255,255,.07);margin-left:-2px;margin-right:-2px;"></div>
+      <div class="sb-link sb-logout" onclick="doLogout()">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+        Logout
+      </div>
+    </nav>
+  </div><!-- /sb -->
+
+  <!-- ── MAIN CONTENT AREA ── -->
+  <div class="adm-wrap" style="margin-left:0;">
+
+    <!-- Top bar -->
+    <div class="adm-topbar">
+      <button onclick="toggleSB(true)" style="padding:8px;border-radius:10px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);cursor:pointer;display:flex;flex-shrink:0;">
+        <svg width="20" height="20" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="2.5" stroke-linecap="round"><path d="M3 6h16M3 12h16M3 18h16"/></svg>
+      </button>
+      <h2 id="sec-ttl" style="font-family:var(--fd);font-size:1.25rem;">Dashboard</h2>
+      <div style="margin-left:auto;display:flex;gap:8px;">
+        <button onclick="go('home')" style="padding:7px 14px;border-radius:9px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);cursor:pointer;color:rgba(255,255,255,.7);font-size:.78rem;font-family:var(--fs);font-weight:600;transition:.15s;" onmouseover="this.style.background='rgba(255,255,255,.12)'" onmouseout="this.style.background='rgba(255,255,255,.06)'">
+          ← View Site
+        </button>
+      </div>
+    </div>
+
+    <!-- ── DASHBOARD SECTION ── -->
+    <div id="sec-dashboard" style="padding-top:6px;">
+
+      <!-- Stat cards -->
+      <div class="dash-grid">
+        <div class="dcard dcard-green">
+          <div class="dc-icon">👥</div>
+          <div><div class="dc-n" id="d-total">—</div><div class="dc-l">Total Members</div></div>
+        </div>
+        <div class="dcard dcard-teal">
+          <div class="dc-icon">🌿</div>
+          <div><div class="dc-n" id="d-gens">—</div><div class="dc-l">Generations</div></div>
+        </div>
+        <div class="dcard dcard-purple">
+          <div class="dc-icon">🏠</div>
+          <div><div class="dc-n" id="d-hkids">—</div><div class="dc-l">Children of Head</div></div>
+        </div>
+        <div class="dcard dcard-blue">
+          <div class="dc-icon">♂</div>
+          <div><div class="dc-n" id="d-males">—</div><div class="dc-l">Male Members</div></div>
+        </div>
+        <div class="dcard dcard-rose">
+          <div class="dc-icon">♀</div>
+          <div><div class="dc-n" id="d-females">—</div><div class="dc-l">Female Members</div></div>
+        </div>
+        <div class="dcard dcard-amber">
+          <div class="dc-icon">🔑</div>
+          <div><div class="dc-n" id="d-admins">—</div><div class="dc-l">Admins</div></div>
+        </div>
+      </div>
+
+      <!-- Gender ratio -->
+      <div class="gender-ratio-card">
+        <h4>Gender Ratio</h4>
+        <div class="ratio-bar">
+          <div class="ratio-bar-male" id="gender-bar-male" style="width:50%;"></div>
+        </div>
+        <div class="ratio-labels">
+          <span class="lbl-m">♂ Male — <span id="d-males-pct">50</span>%</span>
+          <span class="lbl-f">♀ Female — <span id="d-females-pct">50</span>%</span>
+        </div>
+      </div>
+
+      <!-- Quick actions -->
+      <div class="quick-actions">
+        <button class="qa-btn" onclick="showSec('members', document.querySelectorAll('.sb-link')[1])">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+          Manage Members
+        </button>
+        <button class="qa-btn" onclick="showSec('admins', document.querySelectorAll('.sb-link')[2])">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+          Manage Admins
+        </button>
+        <button class="qa-btn" onclick="enterTree(headId())">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 3l14 9-14 9V3z"/></svg>
+          View Tree
+        </button>
+      </div>
+
+      <!-- Recently added -->
+      <div class="recent-panel">
+        <div class="recent-panel-hdr">
+          <h4>Recently Added</h4>
+          <span style="font-size:.72rem;color:rgba(255,255,255,.35);">Last 5 members</span>
+        </div>
+        <table>
+          <tbody id="recent-tbody">
+            <tr><td colspan="4" style="text-align:center;color:rgba(255,255,255,.4);padding:20px;font-size:.85rem;">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div><!-- /sec-dashboard -->
+
+    <!-- ── MEMBERS SECTION ── -->
+    <div id="sec-members" style="display:none;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
+        <h3 style="font-family:var(--fd);color:var(--g);font-size:1.05rem;">Family Members</h3>
+        <button class="btn btn-sm" id="btn-add-head" onclick="openAddHead()">+ Add Family Head</button>
+      </div>
+      <div style="position:relative;margin-bottom:14px;">
+        <svg style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--mut);pointer-events:none;" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path stroke-linecap="round" d="M21 21l-4.35-4.35"/></svg>
+        <input id="mt-search" class="fi" style="padding-left:38px;" placeholder="Search members…" oninput="renderMT()"/>
+      </div>
+      <div class="tbl-wrap" style="overflow-x:auto;">
+        <table class="at">
+          <thead>
+            <tr>
+              <th>Photo</th>
+              <th>Full Name</th>
+              <th>Gen</th>
+              <th>Gender</th>
+              <th>Parent</th>
+              <th style="text-align:center;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="mtbody"></tbody>
+        </table>
+        <div id="mt-footer" style="padding:12px 18px;border-top:1px solid var(--bdr);display:flex;align-items:center;gap:10px;flex-wrap:wrap;"></div>
+      </div>
+    </div><!-- /sec-members -->
+
+    <!-- ── ADMINS SECTION ── -->
+    <div id="sec-admins" style="display:none;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
+        <h3 style="font-family:var(--fd);color:var(--g);font-size:1.05rem;">Manage Admins</h3>
+        <button class="btn btn-sm" onclick="openCreateAdmin()">+ Create Admin</button>
+      </div>
+      <div class="tbl-wrap">
+        <table class="at">
+          <thead><tr><th>Username</th><th>Role</th><th>Created</th><th>Actions</th></tr></thead>
+          <tbody id="atbody"></tbody>
+        </table>
+      </div>
+    </div><!-- /sec-admins -->
+
+  </div><!-- /adm-wrap -->
+</div><!-- /page-admin-dashboard -->
+
+<!-- ════ PROFILE MODAL ════ -->
+<div id="mod-bg" onclick="closeMod(event)">
+  <div id="mod-box" onclick="event.stopPropagation()">
+    <button onclick="closeModX()" style="position:absolute;top:12px;right:12px;background:var(--bg);border:1px solid var(--bdr);border-radius:50%;width:30px;height:30px;cursor:pointer;font-size:.85rem;color:var(--mut);z-index:10;display:flex;align-items:center;justify-content:center;">✕</button>
+    <div id="mod-cont"></div>
+  </div>
+</div>
+
+<!-- ════ ADD / EDIT MEMBER MODAL ════ -->
+<div id="add-mod" onclick="closeAddOut(event)">
+  <div class="add-box" onclick="event.stopPropagation()">
+    <button onclick="closeAdd()" style="position:absolute;top:12px;right:12px;background:var(--bg);border:1px solid var(--bdr);border-radius:50%;width:30px;height:30px;cursor:pointer;font-size:.85rem;color:var(--mut);display:flex;align-items:center;justify-content:center;">✕</button>
+    <h3 id="add-ttl" style="font-family:var(--fd);font-size:1.1rem;color:var(--g);margin-bottom:16px;">Add Family Member</h3>
+
+    <div id="add-parent-info" style="display:none;background:var(--gp);border-radius:10px;padding:10px 14px;margin-bottom:16px;font-size:.8rem;color:var(--g);font-weight:600;border-left:3px solid var(--gl);">
+      <span style="opacity:.7;font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:2px;">Adding child under</span>
+      <span id="add-parent-name"></span>
+    </div>
+
+    <!-- Photo upload with preview -->
+    <div style="margin-bottom:16px;display:flex;align-items:center;gap:14px;">
+      <div style="flex:1;">
+        <label class="fl">Photo</label>
+        <input id="fm-photo" type="file" accept="image/*" class="fi" onchange="previewPhoto(this)" style="padding:6px;"/>
+      </div>
+      <img id="photo-preview" class="photo-preview" alt="Preview" style="width:70px;height:70px;border-radius:50%;object-fit:cover;border:3px solid var(--gpp);display:none;flex-shrink:0;"/>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div><label class="fl">First Name *</label><input id="fm-fn" class="fi" placeholder="e.g. Ibrahim"/></div>
+      <div><label class="fl">Middle Name</label><input id="fm-mn" class="fi" placeholder="e.g. Aliyu"/></div>
+      <div><label class="fl">Surname *</label><input id="fm-sn" class="fi" placeholder="e.g. Makama"/></div>
+      <div><label class="fl">Nickname (in brackets)</label><input id="fm-nk" class="fi" placeholder="e.g. Yaya"/></div>
+      <div><label class="fl">Gender *</label>
+        <select id="fm-g" class="fi"><option value="Male">♂ Male</option><option value="Female">♀ Female</option></select>
+      </div>
+      <div><label class="fl">Date of Birth</label><input id="fm-d" type="date" class="fi"/></div>
+      <div><label class="fl">State</label><input id="fm-st" class="fi" placeholder="e.g. Kano"/></div>
+      <div><label class="fl">LGA</label><input id="fm-lg" class="fi" placeholder="e.g. Nassarawa"/></div>
+      <div id="fm-p-wrap" style="display:none;grid-column:span 2;">
+        <label class="fl">Parent</label>
+        <select id="fm-p" class="fi"><option value="">None (Head)</option></select>
+      </div>
+    </div>
+    <div style="margin-top:12px;"><label class="fl">Address</label><input id="fm-ad" class="fi" placeholder="Street, City"/></div>
+
+    <div style="display:flex;gap:10px;margin-top:20px;">
+      <button id="save-btn" class="btn" style="flex:1;" onclick="saveMember()">Save Member</button>
+      <button class="btn-o" style="flex:1;" onclick="closeAdd()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════ CREATE ADMIN MODAL ════ -->
+<div id="admin-modal" onclick="if(event.target===this)closeAdminModal()">
+  <div class="add-box" onclick="event.stopPropagation()" style="max-width:400px;">
+    <button onclick="closeAdminModal()" style="position:absolute;top:12px;right:12px;background:var(--bg);border:1px solid var(--bdr);border-radius:50%;width:30px;height:30px;cursor:pointer;font-size:.85rem;color:var(--mut);display:flex;align-items:center;justify-content:center;">✕</button>
+    <h3 style="font-family:var(--fd);font-size:1.1rem;color:var(--g);margin-bottom:16px;">Create Admin</h3>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div><label class="fl">Username *</label><input id="new-adm-user" class="fi" placeholder="e.g. admin_name"/></div>
+      <div><label class="fl">Password * (min 8 chars)</label><input id="new-adm-pass" type="password" class="fi" placeholder="••••••••"/></div>
+      <div id="adm-err" class="err-box"></div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn" style="flex:1;" onclick="saveNewAdmin()">Create Admin</button>
+        <button class="btn-o" style="flex:1;" onclick="closeAdminModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function headId() {
+  const h = M.find(m => !m.parent_id);
+  return h ? h.id : null;
+}
+</script>
+<script src="/js/app.js"></script>
+</body>
+</html>
